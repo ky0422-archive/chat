@@ -1,10 +1,6 @@
 use std::{error::Error, io::*, net::*, result::Result, sync::*, thread};
 
-pub fn handle_connection(
-    stream: TcpStream,
-    channel: mpsc::Sender<String>,
-    arc: Arc<RwLock<Vec<String>>>,
-) -> Result<(), Box<dyn Error>> {
+pub fn handle_connection(stream: TcpStream, channel: mpsc::Sender<String>, arc: Arc<RwLock<Vec<String>>>) -> Result<(), Box<dyn Error>> {
     let mut reader = BufReader::new(stream.try_clone()?);
     let mut writer = BufWriter::new(stream);
 
@@ -27,6 +23,8 @@ pub fn handle_connection(
             if let Err(e) = channel.send(format!("[{}] {}\n", client_name.trim(), reads.trim())) {
                 eprintln!("Error: {}", e);
             }
+
+            println!("Message [{}] {}", client_name.trim(), reads.trim());
         }
     });
 
