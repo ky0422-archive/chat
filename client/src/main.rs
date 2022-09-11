@@ -1,13 +1,32 @@
-use cursive::views::*;
+// use cursive::views::*;
+
+use std::{io::*, net::*, thread};
 
 fn main() {
-    let mut siv = cursive::default();
+    let stream = TcpStream::connect("127.0.0.1:8080").unwrap();
 
-    siv.add_layer(
-        Dialog::around(TextView::new("Hello Dialog!"))
-            .title("Cursive")
-            .button("Quit", |s| s.quit()),
-    );
+    let mut reader = BufReader::new(stream.try_clone().unwrap());
+    let mut writer = BufWriter::new(stream);
 
-    siv.run();
+    thread::spawn(move || {
+        let mut line = String::new();
+
+        loop {
+            reader.read_line(&mut line).unwrap();
+
+            println!("{}", line.trim());
+
+            line.clear();
+        }
+    });
+
+    loop {
+        let mut reads = String::new();
+        stdin().read_line(&mut reads).unwrap();
+
+        writer
+            .write(format!("{}\n", reads.trim()).as_bytes())
+            .unwrap();
+        writer.flush().unwrap();
+    }
 }
