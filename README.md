@@ -14,7 +14,7 @@ $ cargo run
 
 # [Client](./client)
 
-> **Warn**
+> **Warning**
 > 
 > WIP, not working yet!
 
