@@ -1,11 +1,22 @@
-# Backend (Server)
+# [Backend (Server)](./backend)
 
 ```console
 $ cd backend
 $ cargo run
 ```
 
-# Client
+## TODO
+
+* [ ] Thread pool
+* [ ] Database
+* [ ] User permissions
+* [ ] Commands (e.g. `/kick`, `/ban`, `/mute` ..)
+
+# [Client](./client)
+
+> **Warn**
+> 
+> WIP, not working yet!
 
 ```console
 $ cd client
