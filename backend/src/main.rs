@@ -1,14 +1,6 @@
 mod handle_connection;
 
-use std::{
-    net::{SocketAddr, TcpListener},
-    str::FromStr,
-    sync::{
-        mpsc::{self, Receiver, Sender},
-        Arc, RwLock,
-    },
-    thread,
-};
+use std::{net::*, str::*, sync::*, thread};
 
 use handle_connection::*;
 
@@ -18,16 +10,14 @@ fn main() {
 
     println!("Listening on {}", address);
 
-    let (tx, rx): (Sender<String>, Receiver<String>) = mpsc::channel();
+    let (tx, rx): (mpsc::Sender<String>, mpsc::Receiver<String>) = mpsc::channel();
     let arc = Arc::new(RwLock::new(Vec::new()));
     let arc_clone = arc.clone();
 
     thread::spawn(move || loop {
-        loop {
-            let message = rx.recv().unwrap();
+        let message = rx.recv().unwrap();
 
-            arc_clone.write().unwrap().push(message);
-        }
+        arc_clone.write().unwrap().push(message);
     });
 
     for stream in listener.incoming() {
