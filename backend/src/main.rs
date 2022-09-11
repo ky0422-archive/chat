@@ -26,7 +26,11 @@ fn main() {
 
             let (tx, arc) = (tx.clone(), arc.clone());
 
-            thread::spawn(move || handle_connection(stream, tx, arc));
+            thread::spawn(move || {
+                if let Err(e) = handle_connection(stream, tx, arc) {
+                    eprintln!("Error: {}", e);
+                }
+            });
         }
     }
 }
