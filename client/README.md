@@ -4,6 +4,6 @@
 -   [`src`](./src) - Rust source code
     -   [`main.rs`](./src/main.rs) - Main entry point
         -   [`ui`](./src/ui) - User interface
-            -   [`mod.rs`](./src/ui/mod.rs) - User interface module
-            -   [`scroll_view.rs`](./src/ui/scroll_view.rs) - Scroll view
+            -   [`mod.rs`](./src/ui/mod.rs) - User Interface module
+            -   [`chat.rs`](./src/ui/chat.rs) - Chat interface
             -   [`theme.rs`](./src/ui/theme.rs) - Theme

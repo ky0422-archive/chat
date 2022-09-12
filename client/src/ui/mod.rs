@@ -1,5 +1,5 @@
-mod scroll_view;
+mod chat;
 mod theme;
 
-pub use scroll_view::*;
+pub use chat::*;
 pub use theme::*;

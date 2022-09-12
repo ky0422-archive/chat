@@ -18,7 +18,7 @@ fn main() {
 
     let layer = Dialog::around(layout)
         .title("Chat")
-        .button("Submit", move |s| submit(&mut *writer.borrow_mut(), s))
+        .button("Send", move |s| submit(&mut *writer.borrow_mut(), s))
         .button("Quit", |s| s.quit())
         .h_align(HAlign::Center);
 
@@ -50,4 +50,12 @@ fn submit(writer: &mut BufWriter<TcpStream>, cursive: &mut Cursive) {
     writer.flush().unwrap();
 
     cursive.call_on_name("content", |view: &mut EditView| view.set_content(String::new())).unwrap();
+
+    cursive
+        .call_on_name("chat", |view: &mut TextView| {
+            if view.get_content().source().trim() == "Enter your name" {
+                view.set_content(String::new());
+            }
+        })
+        .unwrap();
 }
