@@ -1,8 +1,7 @@
 mod handle_connection;
 
-use std::{net::*, str::*, sync::*, thread};
-
 use handle_connection::*;
+use std::{net::*, str::*, sync::*, thread};
 
 fn main() {
     let address = SocketAddr::from_str("127.0.0.1:8080").unwrap();
