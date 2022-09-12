@@ -1,5 +1,5 @@
 <div align="center">
-    <img src="./preview.png" width="600" alt="Preview">
+    <img src="./preview.png" alt="Preview">
 </div>
 
 # [Backend (Server)](./backend)
