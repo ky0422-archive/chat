@@ -14,14 +14,26 @@ fn main() {
     let arc_clone = arc.clone();
 
     thread::spawn(move || loop {
-        let message = rx.recv().unwrap();
-
-        arc_clone.write().unwrap().push(message);
+        match rx.recv() {
+            Ok(message) => match arc_clone.write() {
+                Ok(mut lines) => lines.push(message),
+                Err(e) => eprintln!("Error: {}", e),
+            },
+            Err(e) => {
+                eprintln!("Error: {}", e);
+            }
+        }
     });
 
     for stream in listener.incoming() {
         if let Ok(stream) = stream {
-            println!("New connection: {}", stream.peer_addr().unwrap());
+            println!(
+                "New connection: {}",
+                match stream.peer_addr() {
+                    Ok(addr) => addr.to_string(),
+                    Err(_) => "Unknown".to_string(),
+                }
+            );
 
             let (tx, arc) = (tx.clone(), arc.clone());
 
