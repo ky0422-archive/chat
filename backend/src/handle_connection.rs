@@ -1,3 +1,4 @@
+use chrono::prelude::*;
 use std::{error::Error, io::*, net::*, result::Result, sync::*, thread};
 
 pub fn handle_connection(stream: TcpStream, channel: mpsc::Sender<String>, arc: Arc<RwLock<Vec<String>>>) -> Result<(), Box<dyn Error>> {
@@ -19,8 +20,10 @@ pub fn handle_connection(stream: TcpStream, channel: mpsc::Sender<String>, arc: 
 
         reader.read_line(&mut reads).unwrap();
 
+        let local = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
+
         if reads.trim().len() != 0 {
-            if let Err(e) = channel.send(format!("[{}] {}\n", client_name.trim(), reads.trim())) {
+            if let Err(e) = channel.send(format!("[{}] [{}] {}\n", local, client_name.trim(), reads.trim())) {
                 eprintln!("Error: {}", e);
             }
 
