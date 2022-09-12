@@ -4,10 +4,10 @@ use cursive::{
     theme::{PaletteColor::*, *},
     view::{scroll::*, *},
     views::*,
-    *,
+    View, *,
 };
 
-use std::{cell::RefCell, io::*, net::*, rc::Rc, sync::mpsc, thread};
+use std::{cell::RefCell, io::*, net::*, rc::Rc, thread};
 
 fn main() {
     let mut siv = cursive::default();
@@ -26,9 +26,9 @@ fn main() {
     let writer = Rc::new(RefCell::new(BufWriter::new(stream)));
 
     let layout = LinearLayout::vertical()
-        .child(TextView::new("Enter Name").with_name("title"))
         .child(Panel::new(
             TextView::new(String::new())
+                .with_name("chat")
                 .scrollable()
                 .wrap_with(OnEventView::new)
                 .on_pre_event_inner(Key::PageUp, |v, _| {
@@ -48,53 +48,55 @@ fn main() {
                     }
 
                     Some(EventResult::Consumed(None))
-                })
-                .with_name("chat"),
+                }),
         ))
         .child(EditView::new().with_name("content"));
 
-    let layer = Dialog::around(layout).title("Chat").h_align(HAlign::Center).button("Submit", move |s| {
-        let (title, content) = (
-            s.call_on_name("title", |view: &mut TextView| format!("{}", view.get_content().source())).unwrap(),
-            s.call_on_name("content", |view: &mut EditView| view.get_content()).unwrap(),
-        );
-
-        if title == "Enter Name" {
-            write_content(&mut *writer.borrow_mut(), format!("{content:}"));
-
-            s.call_on_name("title", |view: &mut TextView| view.set_content(format!("Welcome, {content:}!")))
-                .unwrap();
-
-            s.call_on_name("content", |view: &mut EditView| view.set_content(String::new())).unwrap();
-        } else {
-            write_content(&mut *writer.borrow_mut(), format!("{content:}"));
-        }
-    });
+    let layer = Dialog::around(layout)
+        .title("Chat")
+        .h_align(HAlign::Center)
+        .button("Submit", move |s| submit(&mut *writer.borrow_mut(), s));
 
     siv.add_fullscreen_layer(layer.full_screen());
 
-    let (tx, rx) = mpsc::channel();
+    let cb_sink = siv.cb_sink().clone();
 
-    thread::spawn(move || { // A, TODO
-        let mut line = String::new();
-
+    thread::spawn(move || {
         loop {
+            let mut line = String::new();
+
             reader.read_line(&mut line).unwrap();
 
             if line.trim().len() != 0 {
-                siv.call_on_name("chat", |view: &mut TextView| {
-                    view.set_content(format!("{}{}", view.get_content().source(), line.trim()))
-                }); // <- this line is the problem; goto A
-            }
+                // siv.call_on_name("chat", |view: &mut TextView| {
+                //     view.set_content(format!("{}{}", view.get_content().source(), line.trim()))
+                // }); // <- this line is the problem; goto A
 
-            line.clear();
+                cb_sink
+                    .send(Box::new(move |siv| {
+                        siv.call_on_name("chat", |view: &mut TextView| view.append(format!("{}\n", line.trim())));
+                    }))
+                    .unwrap();
+            }
         }
     });
 
     siv.run();
 }
 
-fn write_content(writer: &mut BufWriter<TcpStream>, content: String) {
+fn submit(writer: &mut BufWriter<TcpStream>, cursive: &mut Cursive) {
+    let content = cursive.call_on_name("content", |view: &mut EditView| view.get_content()).unwrap();
+
     writer.write(format!("{}\n", content.trim()).as_bytes()).unwrap();
     writer.flush().unwrap();
+
+    cursive.call_on_name("content", |view: &mut EditView| view.set_content(String::new())).unwrap();
+
+    // chat: focus last line
+
+    cursive.call_on_name("chat", |view: &mut ScrollView<TextView>| {
+        let scroller = view.get_scroller_mut();
+
+        scroller.scroll_down(scroller.last_outer_size().y.saturating_sub(1));
+    });
 }
