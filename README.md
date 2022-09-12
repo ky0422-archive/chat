@@ -1,3 +1,7 @@
+<div align="center">
+    <img src="./preview.png" width="600" alt="Preview">
+</div>
+
 # [Backend (Server)](./backend)
 
 ```console
