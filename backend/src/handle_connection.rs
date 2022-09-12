@@ -1,7 +1,7 @@
 use chrono::prelude::*;
-use std::{error::Error, io::*, net::*, result::Result, sync::*, thread};
+use std::{io::*, net::*, sync::*, thread};
 
-pub fn handle_connection(stream: TcpStream, channel: mpsc::Sender<String>, arc: Arc<RwLock<Vec<String>>>) -> Result<(), Box<dyn Error>> {
+pub fn handle_connection(stream: TcpStream, channel: mpsc::Sender<String>, arc: Arc<RwLock<Vec<String>>>) -> Result<()> {
     let mut reader = BufReader::new(stream.try_clone()?);
     let mut writer = BufWriter::new(stream);
 
@@ -27,7 +27,7 @@ pub fn handle_connection(stream: TcpStream, channel: mpsc::Sender<String>, arc: 
                         eprintln!("Error: {}", e);
                     }
 
-                    println!("Message [{}] {}", client_name.trim(), reads.trim());
+                    println!("[{local}] Message [{}] {}", client_name.trim(), reads.trim());
                 }
             }
             Err(e) => {
