@@ -7,7 +7,6 @@ pub const BLACK: Color = Color::Rgb(30, 30, 30);
 pub const GRAY: Color = Color::Rgb(60, 60, 60);
 pub const WHITE: Color = Color::Rgb(255, 255, 255);
 
-
 pub fn theme() -> Theme {
     cursive::theme::Theme {
         borders: BorderStyle::Simple,
