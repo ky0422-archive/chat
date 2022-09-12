@@ -14,10 +14,6 @@ $ cargo run
 
 # [Client](./client)
 
-> **Warning**
-> 
-> WIP, not working yet!
-
 ```console
 $ cd client
 
