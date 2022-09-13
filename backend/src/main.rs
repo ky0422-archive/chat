@@ -2,6 +2,7 @@ mod handle_connection;
 
 use handle_connection::*;
 use std::{net::*, str::*, sync::*, thread};
+use threadpool::*;
 
 fn main() {
     let address = SocketAddr::from_str("127.0.0.1:8080").unwrap();
@@ -35,9 +36,11 @@ fn main() {
                 }
             );
 
+            let pool = ThreadPool::new(4);
+
             let (tx, arc) = (tx.clone(), arc.clone());
 
-            thread::spawn(move || {
+            pool.execute(|| {
                 if let Err(e) = handle_connection(stream, tx, arc) {
                     eprintln!("Error: {}", e);
                 }
