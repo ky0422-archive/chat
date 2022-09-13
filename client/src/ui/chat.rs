@@ -8,6 +8,7 @@ use cursive::{
 pub fn scroll_view() -> impl View {
     ScrollView::new(TextView::new(String::new()).with_name("chat"))
         .scroll_strategy(ScrollStrategy::StickToBottom)
+        .with_name("scroll")
         .scrollable()
         .wrap_with(OnEventView::new)
         .on_pre_event_inner(Key::PageUp, |v, _| {

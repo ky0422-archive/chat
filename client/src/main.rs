@@ -1,51 +1,10 @@
+mod lib;
 mod ui;
 
-use cursive::{align::*, event::*, view::*, views::*, *};
+use cursive::{align::*, event::*, view::*, views::*};
+use lib::*;
 use std::{io::*, net::*, sync::*, thread};
 use ui::*;
-
-enum DialogType {
-    Error,
-    Info,
-}
-
-fn dialog<T>(cursive: &mut Cursive, text: T, dialog_type: DialogType)
-where
-    T: Into<String>,
-{
-    cursive.add_layer(Dialog::text(text).button("Ok", move |s| match dialog_type {
-        DialogType::Error => s.quit(),
-        DialogType::Info => {
-            s.pop_layer();
-        }
-    }));
-}
-
-fn submit(writer: &mut BufWriter<TcpStream>, cursive: &mut Cursive) -> Result<()> {
-    let content = match cursive.call_on_name("content", |view: &mut EditView| view.get_content()) {
-        Some(content) => content,
-        None => return Ok(()),
-    };
-
-    writer.write(format!("{}\n", content.trim()).as_bytes())?;
-    writer.flush()?;
-
-    if let None = cursive.call_on_name("content", |view: &mut EditView| view.set_content(String::new())) {
-        return Ok(());
-    }
-
-    if let None = cursive.call_on_name("chat", |view: &mut TextView| {
-        if view.get_content().source().trim() == "Enter your name" {
-            view.set_content(String::new());
-
-            view.append(format!("\n[Client] Welcome, {}!\n\n", content.trim()));
-        }
-    }) {
-        return Ok(());
-    }
-
-    Ok(())
-}
 
 fn main() {
     let mut siv = cursive::default();
