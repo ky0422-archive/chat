@@ -5,9 +5,6 @@ pub fn handle_connection(stream: TcpStream, channel: mpsc::Sender<String>, arc: 
     let mut reader = BufReader::new(stream.try_clone()?);
     let mut writer = BufWriter::new(stream);
 
-    writer.write(b"Enter your name\n")?;
-    writer.flush()?;
-
     let mut client_name = String::new();
     reader.read_line(&mut client_name)?;
 
