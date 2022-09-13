@@ -11,7 +11,7 @@ $ cargo run
 
 ## TODO
 
-* [ ] Thread pool
+* [X] Thread pool (with [`threadpool`](https://crates.io/crates/threadpool) crate)
 * [ ] Database
 * [ ] User permissions
 * [ ] Commands (e.g. `/kick`, `/ban`, `/mute` ..)
