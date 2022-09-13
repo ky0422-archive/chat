@@ -37,6 +37,8 @@ fn submit(writer: &mut BufWriter<TcpStream>, cursive: &mut Cursive) -> Result<()
     if let None = cursive.call_on_name("chat", |view: &mut TextView| {
         if view.get_content().source().trim() == "Enter your name" {
             view.set_content(String::new());
+
+            view.append(format!("\n[Client] Welcome, {}!\n\n", content.trim()));
         }
     }) {
         return Ok(());
@@ -70,7 +72,6 @@ fn main() {
         }
     });
     let writer = Arc::new(Mutex::new(BufWriter::new(stream)));
-    let writer_clone = writer.clone();
 
     let layout = LinearLayout::vertical()
         .child(Panel::new(scroll_view()))
@@ -80,7 +81,6 @@ fn main() {
                     Ok(writer) => writer,
                     Err(e) => {
                         dialog(s, format!("Error: Failed to lock writer:\n{e}"), DialogType::Error);
-
                         return;
                     }
                 },
@@ -90,27 +90,7 @@ fn main() {
             }
         }));
 
-    let layer = Dialog::around(layout)
-        .title("Chat")
-        .button("Send", move |s| {
-            if let Err(e) = submit(
-                match &mut (writer_clone.lock()) {
-                    Ok(writer) => writer,
-                    Err(e) => {
-                        dialog(s, format!("Error: Failed to lock writer:\n{e}"), DialogType::Error);
-
-                        return;
-                    }
-                },
-                s,
-            ) {
-                dialog(s, format!("Error: Failed to send message:\n{e}"), DialogType::Info);
-            }
-        })
-        .button("Quit", |s| s.quit())
-        .h_align(HAlign::Center);
-
-    siv.add_fullscreen_layer(layer.full_screen());
+    siv.add_fullscreen_layer(Dialog::around(layout).h_align(HAlign::Center).full_screen());
 
     let cb_sink = siv.cb_sink().clone();
 
@@ -125,12 +105,10 @@ fn main() {
 
         if line.trim().len() != 0 {
             _ = cb_sink.send(Box::new(move |siv| {
-                siv.call_on_name("chat", |view: &mut TextView| view.append(format!("{}\n", line.trim())));
+                _ = siv.call_on_name("chat", |view: &mut TextView| view.append(format!("{}\n", line.trim())));
             }));
         }
     });
-
-    siv.add_global_callback(Key::Esc, |s| s.quit());
 
     siv.run();
 }
