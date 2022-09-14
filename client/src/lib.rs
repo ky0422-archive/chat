@@ -1,3 +1,5 @@
+pub mod ui;
+
 use cursive::{views::*, *};
 use std::{io::*, net::*, sync::*};
 
@@ -31,6 +33,10 @@ pub fn submit(writer: &mut BufWriter<TcpStream>, cursive: &mut Cursive) -> Resul
 
     writer.write(format!("{}\n", content.trim()).as_bytes())?;
     writer.flush()?;
+
+    if let None = cursive.call_on_name("scroll", |view: &mut ScrollView<NamedView<TextView>>| view.scroll_to_bottom()) {
+        return Ok(());
+    }
 
     Ok(())
 }

@@ -1,10 +1,6 @@
-mod lib;
-mod ui;
-
+use client::{ui::*, *};
 use cursive::{align::*, event::*, view::*, views::*};
-use lib::*;
 use std::{io::*, net::*, sync::*, thread};
-use ui::*;
 
 fn main() {
     let mut siv = cursive::default();
