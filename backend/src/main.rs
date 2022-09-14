@@ -1,6 +1,6 @@
-mod handle_connection;
+pub mod handler;
 
-use handle_connection::*;
+use crate::handler::*;
 use std::{net::*, str::*, sync::*, thread};
 use threadpool::*;
 
@@ -10,7 +10,7 @@ fn main() {
 
     println!("Listening on {}", address);
 
-    let (tx, rx): (mpsc::Sender<String>, mpsc::Receiver<String>) = mpsc::channel();
+    let (tx, rx) = mpsc::channel();
     let arc = Arc::new(RwLock::new(Vec::new()));
     let arc_clone = arc.clone();
 
