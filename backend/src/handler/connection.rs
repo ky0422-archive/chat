@@ -28,7 +28,7 @@ pub fn handle_connection(stream: TcpStream, channel: mpsc::Sender<String>, arc: 
                 }
 
                 if reads.trim().starts_with("/") {
-                    handle_error(handle_command(reads.trim(), writer.clone()));
+                    handle_error(handle_command(reads.trim(), writer.clone(), channel.clone()));
                 } else {
                     if reads.trim().len() != 0 {
                         handle_error(channel.send(format!("[{}] [{}] {}\n", local, client_name.trim(), reads.trim())));

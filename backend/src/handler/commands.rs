@@ -1,6 +1,8 @@
 use std::{io::*, net::*, sync::*};
 
-pub fn handle_command<T>(content: T, writer: Arc<Mutex<BufWriter<TcpStream>>>) -> Result<()>
+use crate::*;
+
+pub fn handle_command<T>(content: T, writer: Arc<Mutex<BufWriter<TcpStream>>>, channel: mpsc::Sender<String>) -> Result<()>
 where
     T: Into<String>,
 {
@@ -9,13 +11,13 @@ where
         Err(e) => return Err(Error::new(ErrorKind::Other, format!("Failed to lock writer: {}", e))),
     };
 
-    let content = content.into().to_string();
-    let _args = content.split_whitespace().collect::<Vec<&str>>()[1..].to_vec();
+    let content = content.into().split_whitespace().map(|s| s.to_string()).collect::<Vec<String>>();
+    let (command, args) = (content[0][1..].to_string(), content[1..].to_vec());
 
-    match content.as_str() {
-        // TODO
+    match command.as_str() {
+        "say" => handle_error(channel.send(format!("{}\n", args.join(" ")))),
         _ => {
-            writer.write(format!("Command not found: {}\n", content.trim()).as_bytes())?;
+            writer.write(format!("Command not found: {}\n", command).as_bytes())?;
             writer.flush()?;
         }
     }
