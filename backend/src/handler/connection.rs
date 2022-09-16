@@ -2,6 +2,7 @@ use chrono::prelude::*;
 use std::{io::*, net::*, sync::*, thread};
 
 use super::*;
+use crate::*;
 
 pub fn handle_connection(stream: TcpStream, channel: mpsc::Sender<String>, arc: Arc<RwLock<Vec<String>>>) -> Result<()> {
     let mut reader = BufReader::new(stream.try_clone()?);
@@ -11,9 +12,7 @@ pub fn handle_connection(stream: TcpStream, channel: mpsc::Sender<String>, arc: 
     let mut client_name = String::new();
     reader.read_line(&mut client_name)?;
 
-    if let Err(e) = channel.send(format!("Welcome, {}!\n", client_name.trim())) {
-        eprintln!("Error: {}", e);
-    }
+    handle_error(channel.send(format!("Welcome, {}!\n", client_name.trim())));
 
     thread::spawn(move || loop {
         let mut reads = String::new();
@@ -23,22 +22,16 @@ pub fn handle_connection(stream: TcpStream, channel: mpsc::Sender<String>, arc: 
         match reader.read_line(&mut reads) {
             Ok(size) => {
                 if size == 0 {
-                    if let Err(e) = channel.send(format!("{} disconnected.\n", client_name.trim())) {
-                        eprintln!("Error: {}", e);
-                    }
+                    handle_error(channel.send(format!("{} disconnected.\n", client_name.trim())));
 
                     break;
                 }
 
                 if reads.trim().starts_with("/") {
-                    if let Err(e) = handle_command(reads.trim(), writer.clone()) {
-                        eprintln!("Error: {}", e);
-                    };
+                    handle_error(handle_command(reads.trim(), writer.clone()));
                 } else {
                     if reads.trim().len() != 0 {
-                        if let Err(e) = channel.send(format!("[{}] [{}] {}\n", local, client_name.trim(), reads.trim())) {
-                            eprintln!("Error: {}", e);
-                        }
+                        handle_error(channel.send(format!("[{}] [{}] {}\n", local, client_name.trim(), reads.trim())));
                     }
                 }
 

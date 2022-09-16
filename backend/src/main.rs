@@ -1,6 +1,4 @@
-pub mod handler;
-
-use crate::handler::*;
+use backend::*;
 use std::{net::*, str::*, sync::*, thread};
 use threadpool::*;
 
@@ -41,9 +39,7 @@ fn main() {
             let (tx, arc) = (tx.clone(), arc.clone());
 
             pool.execute(|| {
-                if let Err(e) = handle_connection(stream, tx, arc) {
-                    eprintln!("Error: {}", e);
-                }
+                handle_error(handle_connection(stream, tx, arc));
             });
         }
     }
