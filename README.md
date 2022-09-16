@@ -13,8 +13,8 @@ $ cargo run
 
 * [X] Thread pool (with [`threadpool`](https://crates.io/crates/threadpool) crate)
 * [ ] Database
-* [ ] User permissions
-* [ ] Commands (e.g. `/kick`, `/ban`, `/mute` ..)
+* [ ] ~~User permissions~~ (project topic changed to anonymous chat)
+* [ ] Commands (e.g. `/say` ..)
 
 # [Client](./client)
 
