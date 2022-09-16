@@ -1,4 +1,3 @@
-use chrono::prelude::*;
 use std::{io::*, net::*, sync::*, thread};
 
 use super::*;
@@ -17,8 +16,6 @@ pub fn handle_connection(stream: TcpStream, channel: mpsc::Sender<String>, arc: 
     thread::spawn(move || loop {
         let mut reads = String::new();
 
-        let local = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
-
         match reader.read_line(&mut reads) {
             Ok(size) => {
                 if size == 0 {
@@ -28,14 +25,12 @@ pub fn handle_connection(stream: TcpStream, channel: mpsc::Sender<String>, arc: 
                 }
 
                 if reads.trim().starts_with("/") {
-                    handle_error(handle_command(reads.trim(), writer.clone(), channel.clone()));
+                    handle_error(handle_command(reads.trim(), writer.clone(), channel.clone(), client_name.clone()));
                 } else {
                     if reads.trim().len() != 0 {
-                        handle_error(channel.send(format!("[{}] [{}] {}\n", local, client_name.trim(), reads.trim())));
+                        send_message(client_name.trim(), reads.trim(), channel.clone());
                     }
                 }
-
-                println!("[{local}] Message [{}] {}", client_name.trim(), reads.trim());
             }
             Err(e) => {
                 eprintln!("Error: {}", e);

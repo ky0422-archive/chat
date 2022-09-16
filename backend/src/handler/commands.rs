@@ -2,7 +2,7 @@ use std::{io::*, net::*, sync::*};
 
 use crate::*;
 
-pub fn handle_command<T>(content: T, writer: Arc<Mutex<BufWriter<TcpStream>>>, channel: mpsc::Sender<String>) -> Result<()>
+pub fn handle_command<T>(content: T, writer: Arc<Mutex<BufWriter<TcpStream>>>, channel: mpsc::Sender<String>, client_name: String) -> Result<()>
 where
     T: Into<String>,
 {
@@ -16,6 +16,7 @@ where
 
     match command.as_str() {
         "say" => handle_error(channel.send(format!("{}\n", args.join(" ")))),
+        "shrug" => send_message(client_name.trim(), format!("{} {}", args.join(" "), "¯\\_(ツ)_/¯").as_str(), channel),
         _ => {
             writer.write(format!("Command not found: {}\n", command).as_bytes())?;
             writer.flush()?;
