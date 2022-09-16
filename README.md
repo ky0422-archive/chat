@@ -30,7 +30,7 @@ $ cargo run
 
 | Command  | Description                 |
 | -------- | --------------------------- |
-| `/say`   | Send a message to all users |
+| `/say`   | Send a message anonymously. |
 | `/shrug` | Send a message with a shrug |
 
 it is handled by the backend.
