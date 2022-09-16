@@ -11,10 +11,10 @@ $ cargo run
 
 ## TODO
 
-* [X] Thread pool (with [`threadpool`](https://crates.io/crates/threadpool) crate)
-* [ ] Database
-* [ ] ~~User permissions~~ (project topic changed to anonymous chat)
-* [ ] Commands (e.g. `/say` ..)
+-   [x] Thread pool (with [`threadpool`](https://crates.io/crates/threadpool) crate)
+-   [ ] Database
+-   [ ] ~~User permissions~~ (project topic changed to anonymous chat)
+-   [ ] Commands (e.g. `/say` ..)
 
 # [Client](./client)
 
@@ -25,3 +25,12 @@ Use cursive crates. if you get errors when building, see the cursive repository.
 https://github.com/gyscos/cursive
 $ cargo run
 ```
+
+# Commands
+
+| Command  | Description                 |
+| -------- | --------------------------- |
+| `/say`   | Send a message to all users |
+| `/shrug` | Send a message with a shrug |
+
+it is handled by the backend.
