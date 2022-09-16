@@ -14,12 +14,14 @@ where
     }
 }
 
+pub fn local() -> String {
+    Local::now().format("%Y-%m-%d %H:%M").to_string()
+}
+
 pub fn send_message<T>(name: T, message: T, channel: mpsc::Sender<String>)
 where
     T: Into<String> + Copy,
 {
-    let local = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
-
-    handle_error(channel.send(format!("[{}] [{}] {}\n", local, name.into(), message.into())));
-    println!("[{}] Message [{}] {}", local, name.into(), message.into());
+    handle_error(channel.send(format!("[{}] [{}] {}\n", local(), name.into(), message.into())));
+    println!("[{}] Message [{}] {}", local(), name.into(), message.into());
 }

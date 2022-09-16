@@ -15,7 +15,11 @@ where
     let (command, args) = (content[0][1..].to_string(), content[1..].to_vec());
 
     match command.as_str() {
-        "say" => handle_error(channel.send(format!("{}\n", args.join(" ")))),
+        "say" => {
+            handle_error(channel.send(format!("[Anonymous] {}\n", args.join(" "))));
+
+            println!("[{}] Message [{}] {}", local(), "Anonymous", args.join(" "));
+        }
         "shrug" => send_message(client_name.trim(), format!("{} {}", args.join(" "), "¯\\_(ツ)_/¯").as_str(), channel),
         _ => {
             writer.write(format!("Command not found: {}\n", command).as_bytes())?;
