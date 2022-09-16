@@ -73,13 +73,18 @@ fn main() {
         }
     });
 
-    siv.add_layer(Dialog::around(
-        LinearLayout::vertical().child(Panel::new(TextView::new("Enter your name").with_name("chat"))).child(
-            OnEventView::new(EditView::new().with_name("client_name")).on_event(Key::Enter, move |s| {
-                submit_name(writer_clone.clone(), cb_sink_clone.clone(), s);
-            }),
-        ),
-    ));
+    siv.add_layer(
+        Dialog::around(
+            LinearLayout::vertical()
+                .child(Panel::new(
+                    TextView::new("if you leave the value blank, you start chatting anonymously.").with_name("chat"),
+                ))
+                .child(OnEventView::new(EditView::new().with_name("client_name")).on_event(Key::Enter, move |s| {
+                    submit_name(writer_clone.clone(), cb_sink_clone.clone(), s);
+                })),
+        )
+        .title("Enter your name."),
+    );
 
     siv.run();
 }

@@ -45,7 +45,11 @@ pub fn submit_name(writer: Arc<Mutex<BufWriter<TcpStream>>>, cb_sink: CbSink, cu
     _ = cursive.call_on_name("client_name", |view: &mut EditView| match writer.lock() {
         Ok(ref mut writer) => {
             if let Err(e) = (|| -> Result<()> {
-                writer.write(format!("{}\n", view.get_content().trim()).as_bytes())?;
+                if view.get_content().trim().is_empty() {
+                    writer.write(format!("Anonymous\n").as_bytes())?;
+                } else {
+                    writer.write(format!("{}\n", view.get_content().trim()).as_bytes())?;
+                }
                 writer.flush()?;
 
                 Ok(())
